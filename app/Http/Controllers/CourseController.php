@@ -10,16 +10,25 @@ class CourseController extends Controller
 {
     public function courses(Request $request)
 	{
-		$products_data = Course::where('title','!=','');
-		if(isset($request->name) & $request->name != '')
+		$course_data = Course::where('title','!=','');
+		if(isset($request->title) & $request->title != '')
 		{
-			$products_data = Product::where('name',$request->name);
+			$course_data = Course::where('title',$request->title);
 		}
-		$products_data = $products_data->paginate(3);
+		$course_data = $course_data->paginate(10);
 		return response()->json([
 		'status' => true,
 		'message' => 'products listed successfully',
-		'data' => $products_data
+		'data' => $course_data
+		],200);
+	}
+    public function course_details(Request $request)
+	{
+		$course_data = Course::find($request->id);
+		return response()->json([
+		'status' => true,
+		'message' => 'products listed successfully',
+		'data' => $course_data
 		],200);
 	}
     public function create(Request $request)
@@ -44,7 +53,6 @@ class CourseController extends Controller
 		'instructor' => $request->instructor,
 		'duration' => $request->duration,
 		);
-//isset($request->description) ? $request->description 
 		$course = Course::create($inputdata);
 			return response()->json([
 			'status' => true,
@@ -54,10 +62,8 @@ class CourseController extends Controller
 	}
     public function update(Request $request)
 	{
-		// echo "hi";exit;
-		// dd($request);
 		$validate = Validator::make($request->all(),[
-		'course_id' => 'required',
+		'id' => 'required',
 		'title' => 'required|string',
 		'description' => 'required',
 		'instructor' => 'required',
@@ -71,8 +77,8 @@ class CourseController extends Controller
 			'error' => $validate->errors()
 			],422);
 		}
-		$course = Course::find($request->course_id);
-		$course->title = $request->description;
+		$course = Course::find($request->id);
+		$course->title = $request->title;
 		$course->description = $request->description;
 		$course->instructor = $request->instructor;
 		$course->duration = $request->duration;
@@ -86,7 +92,7 @@ class CourseController extends Controller
     public function delete(Request $request)
 	{
 		$productvalidate = Validator::make($request->all(),[
-		'course_id' => 'required|exists:courses,id',
+		'id' => 'required|exists:courses,id',
 		]);
 		if($productvalidate->fails())
 		{
@@ -96,7 +102,7 @@ class CourseController extends Controller
 			'error' => $productvalidate->errors()
 			],422);
 		}
-		Course::find($request->course_id)->delete();
+		Course::find($request->id)->delete();
 		return response()->json([
 		'status' => true,
 		'message' => 'Product deleted successfully',

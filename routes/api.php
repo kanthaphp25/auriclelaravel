@@ -3,11 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonsController;
+use App\Http\Controllers\AuthController;
 
 
-Route::post('register',[ApiController::class,'register']);
-Route::post('login',[ApiController::class,'login']);
-
+Route::post('login',[AuthController::class,'login'])->withoutMiddleware('authbasic');;
 /**
 *Course routes
 *
@@ -16,6 +16,7 @@ Route::controller(CourseController::class)->group(function(){
 	Route::get('courses','courses');
 	Route::post('create-course','create');
 	Route::post('update-course','update');
+	Route::post('update-course-details','course_details');
 	Route::delete('delete-course','delete');
 })->middleware('authbasic');
 
@@ -25,19 +26,17 @@ Route::controller(CourseController::class)->group(function(){
 */
 Route::controller(LessonsController::class)->group(function(){
 	Route::get('lessons','lessons');
+	Route::get('course-lessons','course_lessons');
 	Route::post('create-lesson','create');
-	Route::get('update-lesson','update');
-	Route::post('delete-lesson','delete');
-});
+	Route::post('update-lesson','update');
+	Route::post('update-lesson-details','lesson_details');
+	Route::delete('delete-lesson','delete');
+})->middleware('authbasic');
 
 
 
 
-Route::group(['middleware'=>['auth:sanctum']],function(){
-	Route::get('profile',[ApiController::class,'profile']);
-	Route::get('logout',[ApiController::class,'logout']);
-});
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {
+    // return $request->user();
+// })->middleware('auth:sanctum');

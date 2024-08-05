@@ -16,7 +16,12 @@ class AuthBasic
      */
     public function handle(Request $request, Closure $next): Response
     {
-		if(Auth::check())
+		//dd($request);
+		$credentials = [
+        'email' => $request->header('php-auth-user'),
+        'password' => $request->header('php-auth-pw'),
+    ];
+		if(Auth::attempt($credentials))
 		{
 			return $next($request);
 		}
